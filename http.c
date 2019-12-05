@@ -61,6 +61,9 @@ char *decode_request(char buffer[], long valread)
     int j = 0, tmp = 0;
     char *request_method=calloc(10, sizeof(char)),request_resource[20]="",file_name[80]="";
     for (int i = 0; i < valread; i++)
+        printf("%c",buffer[i]);
+
+    for (int i = 0; i < valread; i++)
     {
         if (buffer[i] == ' ')
         {
@@ -70,7 +73,7 @@ char *decode_request(char buffer[], long valread)
         else
             request_method[i] = buffer[i];
     }
-    if (strcmp(request_method, "GET") == 0){
+    if(strcmp(request_method, "GET") == 0){
         for (int i = tmp; i < valread; i++){
             if (buffer[i] == ' ')
                 break;
@@ -79,6 +82,20 @@ char *decode_request(char buffer[], long valread)
                 j++;
             }
         }
+    }
+    else if(strcmp(request_method, "POST") == 0){
+        for (int i = tmp; i < valread; i++){
+            if (buffer[i] == ' ')
+                break;
+            else{
+                request_resource[j] = buffer[i];
+                j++;
+            }
+        }
+    }
+    else{
+        perror("error: ");
+        return "failed";
     }
     sprintf(file_name, "templates/%s", request_resource);
     char *test = read_file(file_name);
@@ -107,7 +124,6 @@ char *read_file(char *file)
         free(duom);
         return header;
     }
-    printf("no fail\n");
     fseek(fp, 0, SEEK_END);
     duom_size = ftell(fp) - 1;
     rewind(fp);
